@@ -2,19 +2,14 @@ const flask_server = 'http://127.0.0.1:5000/';
 const canvas = document.getElementById('gridlife-canvas');
 const context = canvas.getContext('2d');
 
-// fetch(flask_server)
-//   .then(response => {
-//     return response.json();
-//   })
-//   .then(data => {
-//     console.log("Success! Data from server:", data);
-//   })
-//   .catch(error => {
-//     console.error("Error fetching data:", error);
-//   });
+const FADE_DURATION = 500;
+const C_ALIVE_HEX = '#4FD1C5';
+const C_ALIVE_RGB = '79, 209, 197';
 
 let currentGrid = [];
 let previousGrid = [];
+let fadingCells = [];
+let fadingOutCells = [];
 
 function drawGrid(current, previous) {
   const rowCount = current.length;
@@ -40,8 +35,8 @@ function drawGrid(current, previous) {
         });
         
       } else if (previousState == 1 && currentState == 1) { // STABLE
-        context.fillStyle = '#00ff00';
-        context.shadowColor = '#00ff00';
+        context.fillStyle = C_ALIVE_HEX;
+        context.shadowColor = C_ALIVE_HEX;
         context.shadowBlur = 15;
         context.fillRect(
           c * cellSize,
@@ -71,10 +66,6 @@ function update() {
     });
 }
 
-const FADE_DURATION = 500;
-let fadingCells = [];
-let fadingOutCells = [];
-
 function render() {
   const colCount = currentGrid.length > 0 ? currentGrid[0].length : 0;
   if (colCount === 0) {
@@ -91,7 +82,7 @@ function render() {
     const elapsedTime = now - cell.startTime;
     const opacity = Math.min(1, elapsedTime / FADE_DURATION);
 
-    context.fillStyle = `rgba(0, 255, 0, ${opacity})`;
+    context.fillStyle = `rgba(${C_ALIVE_RGB}, ${opacity})`;
     context.fillRect(
       cell.c * cellSize,
       cell.r * cellSize,
@@ -104,7 +95,7 @@ function render() {
     const elapsedTime = now - cell.startTime;
     const opacity = 1 - (Math.min(1, elapsedTime / FADE_DURATION));
 
-    context.fillStyle = `rgba(0, 255, 0, ${opacity})`;
+    context.fillStyle = `rgba(${C_ALIVE_RGB}, ${opacity})`;
     context.fillRect(
       cell.c * cellSize,
       cell.r * cellSize,
