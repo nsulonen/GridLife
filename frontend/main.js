@@ -26,7 +26,7 @@ function drawGrid(grid) {
     for (let c = 0; c < colCount; c++) {
 
       if (grid[r][c] === 1) {
-        context.fillStyle = '#222';
+        context.fillStyle = 'white';
         context.fillRect(
           c * cellSize,
           r * cellSize,
