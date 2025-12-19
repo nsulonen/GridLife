@@ -26,13 +26,16 @@ function drawGrid(grid) {
     for (let c = 0; c < colCount; c++) {
 
       if (grid[r][c] === 1) {
-        context.fillStyle = 'white';
+        context.fillStyle = '#00ff00';
+        context.shadowColor = '#00ff00';
+        context.shadowBlur = 15;
         context.fillRect(
           c * cellSize,
           r * cellSize,
           cellSize,
           cellSize
         );
+        context.shadowBlur = 0;
       }
     }
   }
