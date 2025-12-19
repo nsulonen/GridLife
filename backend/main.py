@@ -5,8 +5,8 @@ import random, time, threading
 app = Flask(__name__)
 CORS(app)
 
-width = 10
-height = 10
+width = 200
+height = 200
 
 world_grid = [[random.choice([0, 1]) for _ in range(width)] for _ in range(height)]
 
@@ -18,7 +18,7 @@ def run_simulation():
     global world_grid
     while True:
         world_grid = tick(world_grid)
-        time.sleep(1)
+        time.sleep(0.1)
 
 def tick(current_grid):
     height = len(current_grid)
