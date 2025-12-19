@@ -20,3 +20,7 @@
 - `[Pending]` Allow players to add their own cells
 - `[Pending]` Implement a leaderboard for player cell counts
 - `[Pending]` Introduce different cell "skills" (e.g., reproduction, offense)
+
+### Deployment
+
+- `[Pending]` Deploy the application to a web server
