@@ -37,7 +37,7 @@ function drawGrid(current, previous) {
       } else if (previousState == 1 && currentState == 1) { // STABLE
         context.fillStyle = C_ALIVE_HEX;
         context.shadowColor = C_ALIVE_HEX;
-        context.shadowBlur = 15;
+        context.shadowBlur = 10;
         context.fillRect(
           c * cellSize,
           r * cellSize,
