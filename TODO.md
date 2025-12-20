@@ -14,6 +14,7 @@
 ### Project Finale
 
 - `[Done]` Refactor frontend to use Cell objects (OOP)
-- `[In-Progress]` Implement cell aging (color changes based on lifespan)
-- `[Pending]` Implement cell generations (visualize lineage with color)
+- `[Done]` Implement backend ecosystem simulation (stateful cells, new rules)
+- `[In-Progress]` Implement aging & decay visuals (color interpolation)
+- `[Pending]` Implement generation visuals (color palette)
 - `[Pending]` Deploy the application to a web server
