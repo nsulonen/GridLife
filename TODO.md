@@ -12,6 +12,7 @@
 
 ### Future Features
 
+- `[Pending]` Implement wrap-around grid (toroidal array)
 - `[Pending]` Implement cell aging (color changes based on lifespan)
 - `[Pending]` Implement cell generations (visualize lineage with color)
 - `[Pending]` Refactor frontend to use Cell objects (OOP)
