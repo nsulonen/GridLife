@@ -13,7 +13,7 @@
 
 ### Project Finale
 
-- `[Pending]` Refactor frontend to use Cell objects (OOP)
-- `[Pending]` Implement cell aging (color changes based on lifespan)
+- `[Done]` Refactor frontend to use Cell objects (OOP)
+- `[In-Progress]` Implement cell aging (color changes based on lifespan)
 - `[Pending]` Implement cell generations (visualize lineage with color)
 - `[Pending]` Deploy the application to a web server
