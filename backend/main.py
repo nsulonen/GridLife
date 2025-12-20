@@ -13,7 +13,7 @@ def get_grid():
     response_data = {
         "width": new_sim.width,
         "height": new_sim.height,
-        "grid": new_sim.grid
+        "grid": new_sim.get_cell_states()
     }
     return jsonify(response_data)
 

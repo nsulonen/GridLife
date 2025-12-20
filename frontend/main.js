@@ -72,39 +72,23 @@ function update() {
 
       for (let r = 0; r < data.height; r++) {
         for (let c = 0; c < data.width; c++) {
-
-          const serverStateIsAlive = (data.grid[r][c] === 1);
+          const serverState = data.grid[r][c];
           const clientCell = currentGrid[r][c];
 
-          if (serverStateIsAlive && !clientCell.isAlive) {
-            clientCell.isAlive = true;
-            clientCell.age = 0;
+          const wasAlive = clientCell.isAlive;
+          const isNowAlive = (serverState === "ALIVE");
 
-            let maxParentGeneration = 0;
-            for (let dr = -1; dr <= 1; dr++) {
-              for (let dc = -1; dc <= 1; dc++) {
-                if (dr === 0 && dc === 0) continue;
+          clientCell.isAlive = isNowAlive;
+          clientCell.state = serverState;
 
-                const nr = r + dr;
-                const nc = c + dc;
-
-                if (nr >= 0 && nr < data.height && nc >= 0 && nc < data.width) {
-                  if (previousGrid[nr][nc].isAlive) {
-                    maxParentGeneration = Math.max(maxParentGeneration, previousGrid[nr][nc].generation);
-                  }                
-                }
-              }
-            }
-            
-            clientCell.generation = maxParentGeneration + 1;
-            
-          } else if (serverStateIsAlive && clientCell.isAlive) {
+          if (isNowAlive && wasAlive) {
             clientCell.incrementAge();
-
-          } else if (!serverStateIsAlive && clientCell.isAlive) {
-            clientCell.isAlive = false;
+          }
+          else if (isNowAlive && !wasAlive) {
             clientCell.age = 0;
-
+          }
+          else if (!isNowAlive && wasAlive) {
+            clientCell.age = 0;
           }
         }
       }
