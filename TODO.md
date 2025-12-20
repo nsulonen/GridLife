@@ -9,20 +9,11 @@
 ### Backend
 
 - `[Done]` Refactor simulation logic into a `Simulation` class (OOP)
-
-### Future Features
-
 - `[Done]` Implement wrap-around grid (toroidal array)
+
+### Project Finale
+
+- `[Pending]` Refactor frontend to use Cell objects (OOP)
 - `[Pending]` Implement cell aging (color changes based on lifespan)
 - `[Pending]` Implement cell generations (visualize lineage with color)
-- `[Pending]` Refactor frontend to use Cell objects (OOP)
-
-### Gamification Features
-
-- `[Pending]` Allow players to add their own cells
-- `[Pending]` Implement a leaderboard for player cell counts
-- `[Pending]` Introduce different cell "skills" (e.g., reproduction, offense)
-
-### Deployment
-
 - `[Pending]` Deploy the application to a web server
