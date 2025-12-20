@@ -10,7 +10,12 @@ new_sim = Simulation(100, 100)
 
 @app.route("/")
 def get_grid():
-    return jsonify(new_sim.grid)
+    response_data = {
+        "width": new_sim.width,
+        "height": new_sim.height,
+        "grid": new_sim.grid
+    }
+    return jsonify(response_data)
 
 def run_simulation():
     global new_sim
