@@ -16,5 +16,6 @@
 - `[Done]` Refactor frontend to use Cell objects (OOP)
 - `[Done]` Implement backend ecosystem simulation (stateful cells, new rules)
 - `[Done]` Implement aging & decay visuals (color interpolation)
+- `[Pending]` Give 'REBORN' cells unique traits (e.g., resilience)
 - `[Pending]` Implement generation visuals (color palette)
 - `[Pending]` Deploy the application to a web server
