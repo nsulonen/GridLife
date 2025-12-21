@@ -1,112 +1,91 @@
-class Cell {
-  constructor(isAlive, generation) {
-    this.isAlive = isAlive;
-    this.generation = generation;
-    this.age = 0;
-  }
+import { drawGrid, resizeCanvas, cellSize } from "./renderer.js";
+import { init, tick, getSimulationState, shiftGrid, WIDTH, HEIGHT, MAX_AGE } from "./simulation.js";
 
-  incrementAge() {
-    this.age += 1;
-  }
+const canvas = document.getElementById("gridlife-canvas");
+const SIMULATION_TICK_MS = 100;
+
+// --- Panning logic (mouse & touch) ---
+let isPanning = false;
+let lastPanX = 0;
+let lastPanY = 0;
+let accumulatedDeltaX = 0;
+let accumulatedDeltaY = 0;
+
+function getEventCoords(e) {
+  return e.touches ? e.touches[0] : e;
 }
 
-const flask_server = 'http://127.0.0.1:5000/';
-const canvas = document.getElementById('gridlife-canvas');
-const context = canvas.getContext('2d');
+function onPanStart(e) {
+  isPanning = true;
+  const coords = getEventCoords(e);
+  lastPanX = coords.clientX;
+  lastPanY = coords.clientY;
+  canvas.style.cursor = "grabbing";
+}
 
-const FADE_DURATION = 500;
-const C_YOUNG_RGB = [106, 103, 78];
-const C_OLD_RGB = [139, 69, 19];
-const C_DECAYING_HEX = '#8B4512';
+function onPanEnd() {
+  isPanning = false;
+  canvas.style.cursor = "grab";
+}
 
-let MAX_AGE = 0;
-let isInitialized = false;
-let currentGrid = [];
-let previousGrid = [];
+function onPanMove(e) {
+  if (!isPanning) return;
+  e.preventDefault();
 
-function drawGrid() {
-  const rowCount = currentGrid.length;
-  if (rowCount === 0) return;
-  const colCount = currentGrid[0].length;
-  const cellSize = canvas.width / colCount;
+  const isTouchEvent = e.touches !== undefined;
+  const coords = getEventCoords(e);
 
-  context.clearRect(0, 0, canvas.width, canvas.height);
+  accumulatedDeltaX += coords.clientX - lastPanX;
+  accumulatedDeltaY += coords.clientY - lastPanY;
 
-  for (let r = 0; r < rowCount; r++) {
-    for (let c = 0; c < colCount; c++) {
-      const cell = currentGrid[r][c];
+  lastPanX = coords.clientX;
+  lastPanY = coords.clientY;
 
-      if (cell.state === "ALIVE" || cell.state == "REBORN") {
-        
-        const ageRatio = Math.min(cell.age, MAX_AGE) / MAX_AGE;
-        const currentColor = lerpColor(cell.color, C_OLD_RGB, ageRatio);
-        const blur = 10 * (1 - ageRatio);
-       
-        context.fillStyle = currentColor;
-        context.shadowColor = currentColor;
-        context.shadowBlur = blur;
-        context.fillRect(c * cellSize, r * cellSize, cellSize, cellSize);
-        context.shadowBlur = 0;
-        
-      } else if (cell.state === "DECAYING") {
-        context.fillStyle = C_DECAYING_HEX;
-        context.fillRect(c * cellSize, r * cellSize, cellSize, cellSize);
-      }
+  const shiftX = Math.trunc(accumulatedDeltaX / cellSize);
+  const shiftY = Math.trunc(accumulatedDeltaY / cellSize);
+
+  if (shiftX !== 0 || shiftY !== 0) {
+    accumulatedDeltaX -= shiftX * cellSize;
+    accumulatedDeltaY -= shiftY * cellSize;
+
+    if (!isTouchEvent) {
+      shiftGrid(-shiftX, -shiftY);
+    } else {
+      shiftGrid(shiftX, shiftY);
     }
   }
 }
 
-function lerpColor(color1, color2, ratio) {
-  const r = Math.round(color1[0] + (color2[0] - color1[0]) * ratio);
-  const g = Math.round(color1[1] + (color2[1] - color1[1]) * ratio);
-  const b = Math.round(color1[2] + (color2[2] - color1[2]) * ratio);
-  return `rgb(${r}, ${g}, ${b})`;
-}
+canvas.style.cursor = "grab";
+canvas.addEventListener("mousedown", onPanStart);
+canvas.addEventListener("touchstart", onPanStart, { passive: true });
+canvas.addEventListener("mouseup", onPanEnd);
+canvas.addEventListener("touchend", onPanEnd);
+canvas.addEventListener("mouseleave", onPanEnd);
+canvas.addEventListener("touchcancel", onPanEnd);
+canvas.addEventListener("mousemove", onPanMove);
+canvas.addEventListener("touchmove", onPanMove, { passive: false });
 
-function fillGrid(width, height) {
-  const grid = []
-  for (let r = 0; r < height; r++) {
-    const row = []
-    for (let c = 0; c < width; c++) {
-      row.push(new Cell(false, 0));
-    }
-    grid.push(row);
+// --- Game loop ---
+function gameLoop() {
+  const { grid } = getSimulationState();
+  if (grid.length > 0) {
+    drawGrid(grid, MAX_AGE);
   }
-  return grid;
+  requestAnimationFrame(gameLoop);
 }
 
-function update() {
-  fetch(flask_server)
-    .then(response => response.json())
-    .then(data => {
-      if (!isInitialized) {
-        console.log("Initializing grid with dimensions:", data.width, data.height);
-
-        currentGrid = fillGrid(data.width, data.height);
-        previousGrid = fillGrid(data.width, data.height);
-        MAX_AGE = data.max_age;
-
-        isInitialized = true;
-      }
-      previousGrid = JSON.parse(JSON.stringify(currentGrid));
-
-      for (let r = 0; r < data.height; r++) {
-        for (let c = 0; c < data.width; c++) {
-          const serverCell = data.grid[r][c];
-          const clientCell = currentGrid[r][c];
-
-          clientCell.state = serverCell.state
-          clientCell.age = serverCell.age
-          clientCell.color = serverCell.color
-        }
-      }
-    });
+// --- Initialization ---
+function handleResize() {
+  resizeCanvas(WIDTH, HEIGHT);
 }
 
-function render() {
-  drawGrid();
-  requestAnimationFrame(render);
-}
+window.addEventListener("resize", handleResize);
+handleResize();
+init();
 
-setInterval(update, 100);
-render();
+// Start the simulation update loop
+setInterval(tick, SIMULATION_TICK_MS);
+
+// Start the rendering loop
+gameLoop();

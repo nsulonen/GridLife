@@ -22,6 +22,7 @@
 				align-items: center;
 				height: 100vh;
 				margin: 0;
+				overflow: hidden;
 			}
 			h1 {
 				font-family: 'Poppins', sans-serif;
@@ -31,15 +32,13 @@
 				margin-bottom: 2rem;
 			}
 			canvas {
-				background-color: #2D3748; /* A slightly lighter dark shade */
-				border-radius: 10px;
-				box-shadow: 0 0 40px #000000; /* A deeper shadow */
+				width: 100vw;
+				height: 100vh;
 			}
 		</style>
 	</head>
 	<body>
-		<h1>GridLife</h1>
-		<canvas id="gridlife-canvas" width="1000" height="1000"></canvas>
+		<canvas id="gridlife-canvas"></canvas>
 		<script type="module" src="./src/main.js" defer></script>
 	</body>
 </html>

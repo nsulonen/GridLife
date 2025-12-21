@@ -1,14 +1,14 @@
 # GridLife Project Plan
 
 ## Completed Features
-- `[Done]` Refactored backend into an OOP `Simulation` class
-- `[Done]` Implemented initial frontend theme and visuals
-- `[Done]` Implemented wrap-around grid logic in the backend
-- `[Done]` Refactored frontend to use a stateful `Cell` object model
-- `[Done]` Refactored backend to a stateful ecosystem model with new rules
-- `[Done]` Implemented aging and decay visuals on the frontend
-- `[Done]` Implement cell colors based on lineage evolution
+- All previous backend and frontend features up to cell lineage.
+- `[Done]` **Pivoted to a fully client-side architecture.**
+- `[Done]` Refactored frontend into modular `simulation.js` and `renderer.js`.
+- `[Done]` Ported all simulation logic from Python to JavaScript.
+- `[Done]` Implemented a responsive, full-screen canvas.
+- `[Done]` Implemented smooth, touch- and mouse-compatible panning.
 
 ## Project Roadmap
-- `[Pending]` Give 'REBORN' cells unique traits (e.g., resilience)
-- `[Pending]` Deploy the application to a web server
+- `[Pending]` Add UI controls (e.g., Pause/Play, Reset).
+- `[Pending]` Give 'REBORN' cells unique traits (e.g., resilience).
+- `[Pending]` Deploy the application to a web server (e.g., GitHub Pages).
