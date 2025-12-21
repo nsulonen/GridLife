@@ -32,7 +32,6 @@ function onPanMove(e) {
   if (!isPanning) return;
   e.preventDefault();
 
-  const isTouchEvent = e.touches !== undefined;
   const coords = getEventCoords(e);
 
   accumulatedDeltaX += coords.clientX - lastPanX;
@@ -48,11 +47,7 @@ function onPanMove(e) {
     accumulatedDeltaX -= shiftX * cellSize;
     accumulatedDeltaY -= shiftY * cellSize;
 
-    if (!isTouchEvent) {
-      shiftGrid(-shiftX, -shiftY);
-    } else {
-      shiftGrid(shiftX, shiftY);
-    }
+    shiftGrid(-shiftX, -shiftY);
   }
 }
 
