@@ -115,15 +115,15 @@ export function drawGrid(grid, maxAge) {
       if (cell.state === "ALIVE" || cell.state == "REBORN") {
         const ageRatio = Math.min(cell.age, maxAge) / maxAge;
         const currentColor = lerpColor(cell.color, C_OLD_RGB, ageRatio);
-        const blur = 20 * (1 - ageRatio);
+        // const blur = 20 * (1 - ageRatio);
        
         context.fillStyle = currentColor;
-        context.shadowColor = currentColor;
-        context.shadowBlur = blur;
+        // context.shadowColor = currentColor;
+        // context.shadowBlur = blur;
 
         const size = Math.max(1, cellSize - 1);
         context.fillRect(x, y, size, size);
-        context.shadowBlur = 0;
+        // context.shadowBlur = 0;
         
       } else if (cell.state === "DECAYING") {
         context.fillStyle = C_DECAYING_HEX;
