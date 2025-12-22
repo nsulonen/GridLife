@@ -94,7 +94,7 @@ function lerpColor(color1, color2, ratio) {
 }
 
 export function drawGrid(grid, maxAge) {
-  context.fillStyle = black; // Background color
+  context.fillStyle = "#000000"; // Background color
   context.fillRect(0, 0, canvas.width, canvas.height);
   
   const rowCount = grid.length;
