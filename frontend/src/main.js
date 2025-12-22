@@ -130,7 +130,7 @@ handleResize();
 init();
 
 // Start the simulation update loop
-// setInterval(tick, SIMULATION_TICK_MS);
+setInterval(tick, SIMULATION_TICK_MS);
 
 // Start the rendering loop
 gameLoop();
