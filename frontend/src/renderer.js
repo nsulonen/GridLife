@@ -40,19 +40,45 @@ export function zoomAt(scale, screenX, screenY) {
   zoomCenterY = screenY;
 }
 
-export function updateZoomAnimation() {
-  if (Math.abs(cellSize - targetCellSize) < 0.01) {
-    cellSize = targetCellSize;
-    return;
-  }
+export function updateCellSizeAnimation() {
+    if (Math.abs(cellSize - targetCellSize) < 0.01) {
+        cellSize = targetCellSize;
+        return { changed: false, oldCellSize: cellSize };
+    }
+    const oldCellSize = cellSize;
+    cellSize += (targetCellSize - cellSize) * ZOOM_SPEED;
+    return { changed: true, oldCellSize: oldCellSize };
+}
 
-  const gridX = (zoomCenterX - xOffset) / cellSize;
-  const gridY = (zoomCenterY - yOffset) / cellSize;
+export function focusOnZoomTarget(oldCellSize) {
+    const gridX = (zoomCenterX - xOffset) / oldCellSize;
+    const gridY = (zoomCenterY - yOffset) / oldCellSize;
 
-  cellSize += (targetCellSize - cellSize) * ZOOM_SPEED;
+    xOffset = zoomCenterX - gridX * cellSize;
+    yOffset = zoomCenterY - gridY * cellSize;
+}
 
-  xOffset = zoomCenterX - gridX * cellSize;
-  yOffset = zoomCenterY - gridY * cellSize;
+export function clampOffsets(gridWidth, gridHeight) {
+    const gridRenderWidth = gridWidth * cellSize;
+    const gridRenderHeight = gridHeight * cellSize;
+
+    let minX = 0;
+    let maxX = canvas.width - gridRenderWidth;
+    let minY = 0;
+    let maxY = canvas.height - gridRenderHeight;
+
+    if (gridRenderWidth > canvas.width) {
+        minX = canvas.width - gridRenderWidth;
+        maxX = 0;
+    }
+
+    if (gridRenderHeight > canvas.height) {
+        minY = canvas.height - gridRenderHeight;
+        maxY = 0;
+    }
+    
+    xOffset = Math.max(minX, Math.min(maxX, xOffset));
+    yOffset = Math.max(minY, Math.min(maxY, yOffset));
 }
 
 export function adjustOffsets(dx, dy) {
@@ -75,15 +101,16 @@ export function drawGrid(grid, maxAge) {
   if (rowCount === 0) return;
   const colCount = grid[0].length;
 
-  for (let r = 0; r < rowCount; r++) {
-    for (let c = 0; c < colCount; c++) {
+  const startCol = Math.max(0, Math.floor(-xOffset / cellSize));
+  const endCol = Math.min(colCount, Math.ceil((canvas.width - xOffset) / cellSize));
+  const startRow = Math.max(0, Math.floor(-yOffset / cellSize));
+  const endRow = Math.min(rowCount, Math.ceil((canvas.height - yOffset) / cellSize));
+
+  for (let r = startRow; r < endRow; r++) {
+    for (let c = startCol; c < endCol; c++) {
       const cell = grid[r][c];
       const x = xOffset + c * cellSize;
       const y = yOffset + r * cellSize;
-
-      if (x + cellSize < 0 || x > canvas.width || y + cellSize < 0 || y > canvas.height) {
-        continue;
-      }
 
       if (cell.state === "ALIVE" || cell.state == "REBORN") {
         const ageRatio = Math.min(cell.age, maxAge) / maxAge;

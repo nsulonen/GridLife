@@ -1,4 +1,4 @@
-import { drawGrid, resizeCanvas, cellSize, zoomAt, updateZoomAnimation, adjustOffsets } from "./renderer.js";
+import { drawGrid, resizeCanvas, zoomAt, adjustOffsets, updateCellSizeAnimation, focusOnZoomTarget, cellSize, clampOffsets } from "./renderer.js";
 import { init, tick, getSimulationState, shiftGrid, WIDTH, HEIGHT, MAX_AGE } from "./simulation.js";
 
 const canvas = document.getElementById("gridlife-canvas");
@@ -8,8 +8,8 @@ const SIMULATION_TICK_MS = 100;
 let isPanning = false;
 let lastPanX = 0;
 let lastPanY = 0;
-let accumulatedDeltaX = 0;
-let accumulatedDeltaY = 0;
+let panAccumulatorX = 0;
+let panAccumulatorY = 0;
 
 function getEventCoords(e) {
   return e.touches ? e.touches[0] : e;
@@ -23,6 +23,8 @@ function onPanStart(e) {
   lastPanX = coords.clientX;
   lastPanY = coords.clientY;
   canvas.style.cursor = "grabbing";
+  panAccumulatorX = 0;
+  panAccumulatorY = 0;
 }
 
 function onPanEnd() {
@@ -35,22 +37,24 @@ function onPanMove(e) {
   e.preventDefault();
 
   const coords = getEventCoords(e);
-
-  accumulatedDeltaX += coords.clientX - lastPanX;
-  accumulatedDeltaY += coords.clientY - lastPanY;
-
+  const dx = coords.clientX - lastPanX;
+  const dy = coords.clientY - lastPanY;
   lastPanX = coords.clientX;
   lastPanY = coords.clientY;
 
-  const shiftX = Math.trunc(accumulatedDeltaX / cellSize);
-  const shiftY = Math.trunc(accumulatedDeltaY / cellSize);
+  adjustOffsets(dx, dy);
+
+  panAccumulatorX += dx;
+  panAccumulatorY += dy;
+
+  const shiftX = Math.trunc(panAccumulatorX / cellSize);
+  const shiftY = Math.trunc(panAccumulatorY / cellSize);
 
   if (shiftX !== 0 || shiftY !== 0) {
-    accumulatedDeltaX -= shiftX * cellSize;
-    accumulatedDeltaY -= shiftY * cellSize;
-
     shiftGrid(-shiftX, -shiftY);
-    // adjustOffsets(shiftX * cellSize, shiftY * cellSize);
+    panAccumulatorX -= shiftX * cellSize;
+    panAccumulatorY -= shiftY * cellSize;
+    adjustOffsets(-shiftX * cellSize, -shiftY * cellSize);
   }
 }
 
@@ -74,7 +78,11 @@ function onWheelZoom(e) {
 
 // --- Game loop ---
 function gameLoop() {
-  updateZoomAnimation();
+  const { changed, oldCellSize } = updateCellSizeAnimation();
+  if (changed) {
+    focusOnZoomTarget(oldCellSize);
+    clampOffsets(WIDTH, HEIGHT);
+  }
   
   const { grid } = getSimulationState();
   if (grid.length > 0) {
