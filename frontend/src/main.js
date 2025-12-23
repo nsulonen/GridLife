@@ -3,6 +3,7 @@ import { init, tick, getSimulationState, shiftGrid, WIDTH, HEIGHT, MAX_AGE } fro
 
 const canvas = document.getElementById("gridlife-canvas");
 const SIMULATION_TICK_MS = 100;
+const PINCH_SENSITIVITY = 2.5;
 
 // --- Panning logic (mouse & touch) ---
 let isPanning = false;
@@ -47,8 +48,20 @@ function onPanMove(e) {
         activePointers[i] = e;
       }
     }
-    pinchMoved = true;  
-    
+    const p1 = activePointers[0];
+    const p2 = activePointers[1];
+    const newPinchDistance = Math.sqrt((p2.clientX - p1.clientX) ** 2 + (p2.clientY - p1.clientY) ** 2);
+
+    if (initialPinchDistance > 0) {
+      const scaleRatio = newPinchDistance / initialPinchDistance;
+      const scale = 1 + (scaleRatio - 1) * PINCH_SENSITIVITY;
+      const midPointX = (p1.clientX + p2.clientX) / 2;
+      const midPointY = (p1.clientY + p2.clientY) / 2;
+
+      zoomAt(scale, midPointX, midPointY);
+      initialPinchDistance = newPinchDistance;
+    }  
+
   } else if (isPanning) {
     const dx = e.clientX - lastPanX;
     const dy = e.clientY - lastPanY;
@@ -100,23 +113,6 @@ function gameLoop() {
     drawGrid(grid, MAX_AGE);
   }
 
-  if (pinchMoved) {
-    if (activePointers.length === 2) {
-      const p1 = activePointers[0];
-      const p2 = activePointers[1];
-      const newPinchDistance = Math.sqrt((p2.clientX - p1.clientX) ** 2 + (p2.clientY - p1.clientY) ** 2);
-
-      if (initialPinchDistance > 0) {
-        const scale = (newPinchDistance / initialPinchDistance) * 2;
-        const midPointX = (p1.clientX + p2.clientX) / 2;
-        const midPointY = (p1.clientY + p2.clientY) / 2;
-
-        zoomAt(scale, midPointX, midPointY);
-        initialPinchDistance = newPinchDistance;
-      }
-    }
-    pinchMoved = false;
-  }
   requestAnimationFrame(gameLoop);
 }
 
