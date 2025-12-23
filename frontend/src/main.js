@@ -3,7 +3,7 @@ import { init, tick, getSimulationState, shiftGrid, WIDTH, HEIGHT, MAX_AGE } fro
 
 const canvas = document.getElementById("gridlife-canvas");
 const SIMULATION_TICK_MS = 100;
-const PINCH_SENSITIVITY = 2.5;
+const PINCH_SENSITIVITY = 3.5;
 
 // --- Panning logic (mouse & touch) ---
 let isPanning = false;
