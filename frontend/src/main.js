@@ -107,7 +107,7 @@ function gameLoop() {
       const newPinchDistance = Math.sqrt((p2.clientX - p1.clientX) ** 2 + (p2.clientY - p1.clientY) ** 2);
 
       if (initialPinchDistance > 0) {
-        const scale = newPinchDistance / initialPinchDistance;
+        const scale = newPinchDistance / initialPinchDistance * 2;
         const midPointX = (p1.clientX + p2.clientX) / 2;
         const midPointY = (p1.clientY + p2.clientY) / 2;
 
